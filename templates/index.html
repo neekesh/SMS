@@ -1,0 +1,67 @@
+{% extends 'base.html' %}\
+{% load static %}
+
+{% block main %}
+    <table class="table">
+        <thead>
+            <th scope="col">S.N.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Age</th>
+            <th scope="col">Address</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Major</th>
+            <th scope="col">Action</th>
+        </thead>
+        <tbody id="data">
+        </tbody>
+    </table>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const headers = {
+                method: "GET"
+            }
+
+            fetch('http://localhost:8025/api/add', headers)
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                let table_data = ""
+                for (let student in data){
+                    table_data +=   `\
+                    <tr>\
+                        <td>${student + 1}</td>\
+                        <td>${data[student].name }</td>\
+                        <td>${ data[student].age }</td>\
+                        <td>${ data[student].address }</td>\
+                        <td>${ data[student].grade }}</td>\
+                        <td>${ data[student].major }}</td>\
+                        <td>\
+                            <a id="edit"class="btn btn-success" href="http://localhost:8025/update/${data[student].id}">Update</a>\
+                            <button id="delete" class="btn btn-danger" onclick="Delete( ${data[student].id} ) ">Delete</button>\
+                        </td>\
+                    </tr>`
+                }
+                
+                document.getElementById('data').innerHTML = table_data
+            })
+        })
+    </script>
+    <script>
+        function Delete(id){
+            const headers = {
+                method: "DELETE"
+            }
+            fetch(`http://localhost:8025/api/delete/${id}`, headers)
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                if (data.msg == "record deleted"){
+                    location.reload()
+                    alert(data.msg)
+                }
+            })
+        }
+    </script>
+{% endblock main %}
